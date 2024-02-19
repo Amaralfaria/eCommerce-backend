@@ -1,13 +1,7 @@
 from django.db import models
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
-
-class UserType(models.Model):
-    description = models.CharField(max_length=15)
-
-    def __str__(self):
-        return self.description
+from django.utils.translation import gettext as _
 
 
 class UserManager(BaseUserManager):
@@ -22,15 +16,21 @@ class UserManager(BaseUserManager):
         return user
     
     def create_superuser(self, email, password, **extra_fields):
-        extra_fields.setdefault("user_type",UserType.objects.get(description="superuser"))
+        extra_fields.setdefault("user_type",User.UserType.SUPERUSER)
 
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractBaseUser):
-    name = models.CharField(max_length=50)
+    class UserType(models.IntegerChoices):
+        SUPERUSER = 1, _('Superuser'),
+        CLIENT = 2, _('Client'),
+        SELLER = 3, _('Seller')
+        
+
+
     email = models.EmailField(unique=True)
-    user_type = models.ForeignKey(UserType,on_delete=models.DO_NOTHING)
+    user_type = models.IntegerField(choices=UserType.choices)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -42,14 +42,21 @@ class User(AbstractBaseUser):
        return True
 
     def has_perm(self, perm, obj=None):
-       return self.user_type == UserType.objects.get(description="superuser")
+       return self.user_type == self.UserType.SUPERUSER
 
     def has_module_perms(self, app_label):
-       return self.user_type == UserType.objects.get(description="superuser")
+       return self.user_type == self.UserType.SUPERUSER
 
 
     def __str__(self):
         return self.email
+    
+
+def register_user(email, password, user_type):
+    user = User.objects.create_user(email=email, password=password, user_type=user_type)
+
+    return user
+    
 
 
 
