@@ -81,6 +81,7 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    "TOKEN_OBTAIN_SERIALIZER": "baseUser.serializers.MyTokenObtainPairSerializer",
 }
 
 REST_FRAMEWORK = {
