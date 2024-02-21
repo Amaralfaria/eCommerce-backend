@@ -5,7 +5,11 @@ from seller.models import (
 from baseUser.models import User, register_user
 from baseUser.serializers import UserSerializer
 
+class CurrentSellerDefault:
+    requires_context = True
 
+    def __call__(self, serializer_field):
+        return Seller.objects.get(user=serializer_field.context['request'].user)
 
 class SellerSerializer(serializers.ModelSerializer):
     user_data = UserSerializer(required=False)

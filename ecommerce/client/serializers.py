@@ -5,6 +5,11 @@ from client.models import (
 )
 from baseUser.models import User, register_user
 
+class CurrentClientDefault:
+    requires_context = True
+
+    def __call__(self, serializer_field):
+        return Client.objects.get(user=serializer_field.context['request'].user)
 
 
 class ClientSerializer(serializers.ModelSerializer):
