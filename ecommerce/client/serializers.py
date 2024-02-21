@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from baseUser.serializers import UserSerializer
 from client.models import (
-    Client, register_client
+    Client
 )
-from baseUser.models import User
+from baseUser.models import User, register_user
 
 
 
@@ -17,7 +17,8 @@ class ClientSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user_values = validated_data.pop('user_data')
-        client = register_client(name=validated_data['name'],password=user_values['password'],email=user_values['email'])
+        user_values['user_type'] = User.UserType.CLIENT
+        client = register_user(**user_values,**validated_data)
 
         return client
 

@@ -1,7 +1,10 @@
-from django.db import models
+from django.db import DatabaseError, models, transaction
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils.translation import gettext as _
+
+from client.models import Client
+from seller.models import Seller
 
 
 class UserManager(BaseUserManager):
@@ -52,10 +55,19 @@ class User(AbstractBaseUser):
         return self.email
     
 
-def register_user(email, password, user_type):
-    user = User.objects.create_user(email=email, password=password, user_type=user_type)
+def register_user(email, password, user_type, **kwargs):
+    try:
+        with transaction.atomic():
+            user = User.objects.create_user(email=email,password=password,user_type=user_type)
+            sub_user = None
+            if user_type == User.UserType.CLIENT:
+                sub_user = Client.objects.create(user=user,**kwargs)
+            else:
+                sub_user = Seller.objects.create(user=user,**kwargs)
+    except DatabaseError as DBe:
+        raise
 
-    return user
+    return sub_user
     
 
 
