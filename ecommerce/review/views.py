@@ -11,7 +11,18 @@ class ReviewViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.Crea
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [permissions.AllowAny]
-    http_method_names = ['post']
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+    
+    def put(self,request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+    
+    def get(self,request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+    
+    def delete(self,request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+    
+    def get_list(self,request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)

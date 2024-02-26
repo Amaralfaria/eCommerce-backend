@@ -11,7 +11,27 @@ class ClientViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.Crea
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [permissions.AllowAny]
-    http_method_names = ['post']
+
+
+    def get_object(self):
+        return Client.objects.get(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+    
+    def put(self,request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+    
+    def get(self,request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+    
+    def delete(self,request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+    
+    def get_list(self,request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+    
+    
+    
+    
+    
