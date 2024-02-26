@@ -5,12 +5,13 @@ from django.http import JsonResponse
 
 from review.models import Review
 from review.serializers import ReviewSerializer
+from client.views import IsOwnerOrReadOnlyClient
 
 class ReviewViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,
                     mixins.DestroyModelMixin,viewsets.GenericViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsOwnerOrReadOnlyClient]
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)

@@ -4,13 +4,21 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 
 from client.models import Client
+from baseUser.views import IsOwnerOrReadOnly
 from client.serializers import ClientSerializer
+
+class IsOwnerOrReadOnlyClient(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.client == Client.objects.get(user=request.user)
 
 class ClientViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,
                     mixins.DestroyModelMixin,viewsets.GenericViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsOwnerOrReadOnly]
 
 
     def get_object(self):

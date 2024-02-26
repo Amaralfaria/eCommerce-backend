@@ -4,13 +4,15 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 
 from purchase.models import Purchase
+from client.models import Client
+from client.views import IsOwnerOrReadOnlyClient
 from purchase.serializers import PurchaseSerializer
 
 class PurchaseViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,
                     mixins.DestroyModelMixin,viewsets.GenericViewSet):
     queryset = Purchase.objects.all()
     serializer_class = PurchaseSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsOwnerOrReadOnlyClient]
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)

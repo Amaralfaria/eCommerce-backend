@@ -3,13 +3,21 @@ from rest_framework import permissions
 from rest_framework.response import Response
 
 from product.models import Product
+from seller.models import Seller
 from product.serializers import ProductSerializer
+
+class IsOwnerOrReadOnlyProduct(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.seller == Seller.objects.get(user=request.user)
 
 class ProductViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,
                     mixins.DestroyModelMixin,viewsets.GenericViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsOwnerOrReadOnlyProduct]
 
     
     def post(self, request, *args, **kwargs):

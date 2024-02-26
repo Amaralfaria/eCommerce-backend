@@ -7,6 +7,13 @@ from django.http import JsonResponse
 from baseUser.models import User
 from baseUser.serializers import UserSerializer
 
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.user == request.user
+
 
 class UsuarioViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
