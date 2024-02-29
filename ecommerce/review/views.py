@@ -13,6 +13,9 @@ class ReviewViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.Crea
     serializer_class = ReviewSerializer
     permission_classes = [IsOwnerOrReadOnlyClient]
 
+    def filter_queryset(self, queryset):
+        return queryset.filter(product_id=self.kwargs['idProduct'])
+
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
     
