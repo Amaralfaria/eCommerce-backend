@@ -27,4 +27,5 @@ class PurchaseViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.Cr
         return self.destroy(request, *args, **kwargs)
     
     def get_list(self,request, *args, **kwargs):
+        self.queryset = self.queryset.filter(client__user=request.user)
         return self.list(request, *args, **kwargs)
