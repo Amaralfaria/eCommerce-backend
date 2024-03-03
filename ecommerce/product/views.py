@@ -34,3 +34,7 @@ class ProductViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin, mixins.Cre
     
     def get_list(self,request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+    
+    def get_seller_list(self,request, *args, **kwargs):
+        self.queryset = self.queryset.filter(seller__user=request.user)
+        return self.list(request, *args, **kwargs)
